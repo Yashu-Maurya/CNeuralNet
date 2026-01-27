@@ -4,11 +4,16 @@ project(CNeuralNet)
 
 include_directories(include)
 
-set(
-    SOURCES 
-    examples/simple_net.c
+add_library(c_neural_net_lib     
     src/matrix.c
     src/math_functions.c
 )
 
+
+set(
+    SOURCES 
+    examples/simple_net.c
+)
+
 add_executable(simple_net_example ${SOURCES})
+target_link_libraries(simple_net_example c_neural_net_lib)
