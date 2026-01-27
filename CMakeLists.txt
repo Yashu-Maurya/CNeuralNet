@@ -6,8 +6,9 @@ include_directories(include)
 
 set(
     SOURCES 
-    src/main.c 
+    examples/simple_net.c
     src/matrix.c
+    src/math_functions.c
 )
 
-add_executable(c_neural_net ${SOURCES})
+add_executable(simple_net_example ${SOURCES})
