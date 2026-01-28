@@ -125,3 +125,10 @@ Matrix* transpose_mat(Matrix* m) {
     }
 
 }
+
+void scale_matrix(Matrix*m, float scaler) {
+    int n = m->rows * m->columns;
+    for(int i = 0; i < n; i++) {
+        m->data[i] += scaler;
+    }
+}
