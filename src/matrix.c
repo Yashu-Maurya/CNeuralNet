@@ -111,3 +111,17 @@ void zero_matrix(Matrix *m) {
         m->data[i] = 0;
     }
 }
+
+Matrix* transpose_mat(Matrix* m) {
+    if(m == NULL || m->data == NULL) {
+        return NULL;
+    }
+    Matrix *transpose = create_matrix(m->columns, m->rows);
+
+    for(int i = 0 ;i < m->rows; i ++) {
+        for(int j = 0; j<m->columns;j++) {
+            transpose->data[j*transpose->columns + i] = m->data[i*m->columns + j];
+        }
+    }
+
+}
