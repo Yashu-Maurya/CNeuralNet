@@ -22,4 +22,5 @@ void subtract_scaler(Matrix *m, float scaler);
 void add_matrix(Matrix *m1, Matrix *m2);
 void subtract_matrix(Matrix *m1, Matrix *m2);
 void matrix_sigmoid(Matrix *m);
+void zero_matrix(Matrix *m);
 #endif

@@ -104,3 +104,10 @@ void matrix_sigmoid(Matrix *m) {
         m->data[i] = sigmoid(m->data[i]);
     }
 }
+
+void zero_matrix(Matrix *m) {
+    int n = m->rows * m->columns;
+    for(int i = 0; i < n; i++) {
+        m->data[i] = 0;
+    }
+}
