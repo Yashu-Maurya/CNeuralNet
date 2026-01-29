@@ -3,7 +3,17 @@
 
 #include "matrix.h"
 
-typedef struct {
+typedef struct Layer Layer;
+
+typedef Matrix* (*ForwardFunction)(struct Layer *l, Matrix *input);
+typedef Matrix* (*BackwardFunction)(struct Layer* l, Matrix* error_gradient, float learning);
+
+
+struct Layer{
+
+    ForwardFunction forward;
+    BackwardFunction backward;
+
     Matrix *inputs;
     Matrix *weights;
     Matrix *bias;
@@ -14,9 +24,13 @@ typedef struct {
 
     int input_n;
     int output_n;
-} Layer;
 
-Layer* layer_create(int input_size, int neurons);
+    char *name; // FOR REFERENCE ONLY
+};
+
+// Layer* layer_create(int input_n, int output_n);
+Layer* layer_create_dense(int input_n, int output_n);
+Layer* layer_create_sigmoid();
 void free_layer(Layer *layer);
 Matrix* layer_forward(Layer *l, Matrix *input);
 Matrix* layer_backward(Layer* l, Matrix* error_gradient, float learning_rate);
