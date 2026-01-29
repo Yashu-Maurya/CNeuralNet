@@ -5,8 +5,8 @@ A lightweight neural network library written in pure C. Provides matrix operatio
 ## Features
 
 - **Matrix Operations** - Create, manipulate, and perform math on matrices
-- **Neural Network Layers** - Dense (fully connected) layer with forward/backward pass
-- **Memory Safe** - Proper allocation checks and cleanup functions
+- **Polymorphic Layers** - Dense (fully connected) and Sigmoid activation layers with forward/backward pass
+- **Memory Safe** - Proper allocation checks, cleanup functions, and no memory leaks
 - **No Dependencies** - Pure C with only standard library
 
 ## Project Structure
@@ -15,7 +15,7 @@ A lightweight neural network library written in pure C. Provides matrix operatio
 CNeuralNet/
 ├── include/
 │   ├── matrix.h        # Matrix struct and operations
-│   ├── layer.h         # Dense layer struct and functions
+│   ├── layer.h         # Layer struct and layer types (Dense, Sigmoid)
 │   └── math_functions.h # Activation functions (sigmoid)
 ├── src/
 │   ├── matrix.c
@@ -44,6 +44,9 @@ Matrix* create_matrix(int rows, int columns);
 
 // Free matrix and its data
 void free_matrix(Matrix* m);
+
+// Copy a matrix (returns new matrix, caller must free)
+Matrix* copy_matrix(Matrix* m);
 
 // Fill matrix with random values [0, 1]
 void randomize_matrix(Matrix* m);
@@ -75,14 +78,20 @@ void matrix_sigmoid(Matrix* m);
 
 ### Layer
 
+The library provides a polymorphic layer system using function pointers:
+
 ```c
-// Create dense layer: input_size → neurons
-Layer* layer_create(int input_size, int neurons);
+// Create dense layer: input_size → output_size
+// Weights shape: (output_size × input_size)
+Layer* layer_create_dense(int input_size, int output_size);
+
+// Create sigmoid activation layer
+Layer* layer_create_sigmoid();
 
 // Free layer and all its matrices
 void free_layer(Layer* layer);
 
-// Forward pass: compute output = weights × input + bias
+// Forward pass: compute layer output
 Matrix* layer_forward(Layer* l, Matrix* input);
 
 // Backward pass: compute gradients and update weights
@@ -96,7 +105,7 @@ Matrix* layer_backward(Layer* l, Matrix* error_gradient, float learning_rate);
 
 int main() {
     // Create a 1→1 dense layer (learns y = 2x)
-    Layer* dense = layer_create(1, 1);
+    Layer* dense = layer_create_dense(1, 1);
     
     Matrix* input = create_matrix(1, 1);
     Matrix* loss_grad = create_matrix(1, 1);
