@@ -24,5 +24,6 @@ void subtract_matrix(Matrix *m1, Matrix *m2);
 void matrix_sigmoid(Matrix *m);
 void zero_matrix(Matrix *m);
 void scale_matrix(Matrix*m, float scaler);
+Matrix* copy_matrix(Matrix *m);
 Matrix* transpose_mat(Matrix *m);
 #endif

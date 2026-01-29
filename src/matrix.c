@@ -147,3 +147,18 @@ void scale_matrix(Matrix* m, float scaler) {
         m->data[i] *= scaler;
     }
 }
+
+Matrix* copy_matrix(Matrix *m) {
+    if(m == NULL || m->data == NULL)  {
+        perror("Error in Copying Matrix. Null Matrix Input.\n");
+        return NULL;
+    }
+
+    Matrix* out = create_matrix(m->rows, m->columns);
+
+    for(int i = 0;i < m->rows*m->columns;i+=1) {
+        out->data[i] = m->data[i];
+    }
+
+    return out;
+}
