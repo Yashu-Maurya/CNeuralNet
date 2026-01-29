@@ -50,6 +50,9 @@ Matrix* multiply_mat(Matrix* m1, Matrix* m2) {
     }
 
     Matrix* result = create_matrix(m1->rows, m2->columns);
+    if (result == NULL) {
+        return NULL;
+    }
 
     for (int i = 0; i < m1->rows; i++) {
         for (int j = 0; j < m2->columns; j++) {
@@ -127,6 +130,9 @@ Matrix* transpose_mat(Matrix* m) {
         return NULL;
     }
     Matrix* transpose = create_matrix(m->columns, m->rows);
+    if (transpose == NULL) {
+        return NULL;
+    }
 
     for (int i = 0; i < m->rows; i++) {
         for (int j = 0; j < m->columns; j++) {
@@ -155,6 +161,9 @@ Matrix* copy_matrix(Matrix *m) {
     }
 
     Matrix* out = create_matrix(m->rows, m->columns);
+    if (out == NULL) {
+        return NULL;
+    }
 
     for(int i = 0;i < m->rows*m->columns;i+=1) {
         out->data[i] = m->data[i];
