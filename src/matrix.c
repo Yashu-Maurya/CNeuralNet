@@ -99,16 +99,18 @@ void add_matrix(Matrix* m1, Matrix* m2) {
     }
 }
 
-void subtract_matrix(Matrix* m1, Matrix* m2) {
+Matrix* subtract_matrix(Matrix* m1, Matrix* m2) {
     if (m1->rows != m2->rows || m1->columns != m2->columns) {
         printf("Error: Incompatible dimensions for subtraction\n");
         return;
     }
-
+    Matrix* out = create_matrix(m1->rows, m1->columns);
     int n = m1->rows * m1->columns;
     for (int i = 0; i < n; i++) {
-        m1->data[i] -= m2->data[i];
+        out->data[i] = m1->data[i] - m2->data[i];
     }
+
+    return out;
 }
 
 void matrix_sigmoid(Matrix* m) {
