@@ -1,4 +1,6 @@
 #include "../include/network.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 Network* create_network() {
     Network* n = (Network*)malloc(sizeof(Network));
@@ -56,19 +58,26 @@ void add_layer(Network* n, Layer* l) {
     return;
 }
 
-Matrix* predict_network(Network* n, float* input) {
+Matrix* predict_network(Network* n, Matrix* input) {
     if (n == NULL) {
         perror("Network is NULL, Can't predict. \n");
         return NULL;
     }
     if (input == NULL) {
         perror("Input is Empty \n");
-        return;
+        return NULL;
     }
-    Matrix* out = input;
+    
+    if (n->layer_count == 0) {
+        return copy_matrix(input);
+    }
 
-    for (int i = 0; i < n->layer_count; i++) {
-        out = layer_forward(n->layers[i], out);
+    Matrix* out = layer_forward(n->layers[0], input);
+
+    for (int i = 1; i < n->layer_count; i++) {
+        Matrix* next_out = layer_forward(n->layers[i], out);
+        free_matrix(out);  // Free the previous intermediate result
+        out = next_out;
     }
 
     return out;
@@ -77,7 +86,7 @@ Matrix* predict_network(Network* n, float* input) {
 void train_network(Network* n, Matrix* input, Matrix* target, float learning_rate) {
     if (n == NULL || input == NULL || target == NULL) return;
 
-    Matrix* prediction = network_forward(n, input);
+    Matrix* prediction = predict_network(n, input);
     Matrix* loss_gradient = subtract_matrix(prediction, target);
     Matrix* current_gradient = loss_gradient;
 
@@ -93,4 +102,5 @@ void train_network(Network* n, Matrix* input, Matrix* target, float learning_rat
 
     free_matrix(current_gradient);
     free_matrix(loss_gradient);
+    free_matrix(prediction);
 }
