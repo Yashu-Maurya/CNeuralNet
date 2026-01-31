@@ -11,7 +11,9 @@ Matrix* _layer_forward_dense(Layer* l, Matrix* input) {
     Matrix* out = multiply_mat(l->weights, input);
     add_matrix(out, l->bias);
     l->output = out;
-    return out;
+    
+    // Return a copy so caller owns it
+    return copy_matrix(out);
 }
 
 Matrix* _layer_backward_dense(Layer* l, Matrix* error_gradient, float learning_rate) {
@@ -94,7 +96,9 @@ Matrix* _layer_forward_sigmoid(Layer* l, Matrix* input) {
     }
 
     l->output = out;
-    return out;
+    
+    // Return a copy so caller owns it
+    return copy_matrix(out);
 }
 
 Matrix* _layer_backward_sigmoid(Layer* l, Matrix* error_gradient, float learning) {
