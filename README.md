@@ -14,16 +14,19 @@ A lightweight neural network library written in pure C. Provides matrix operatio
 ```
 CNeuralNet/
 ├── include/
-│   ├── matrix.h        # Matrix struct and operations
-│   ├── layer.h         # Layer struct and layer types (Dense, Sigmoid)
+│   ├── matrix.h         # Matrix struct and operations
+│   ├── layer.h          # Layer struct and layer types (Dense, Sigmoid)
+│   ├── network.h        # Network struct for managing multiple layers
 │   └── math_functions.h # Activation functions (sigmoid)
 ├── src/
 │   ├── matrix.c
 │   ├── layer.c
+│   ├── network.c
 │   └── math_functions.c
 └── examples/
-    ├── simple_net.c    # Manual neural net implementation
-    └── layers_example.c # Using Layer abstraction
+    ├── simple_net.c     # Manual neural net implementation
+    ├── layers_example.c # Using Layer abstraction
+    └── network_example.c # Using Network API
 ```
 
 ## Building
@@ -63,9 +66,11 @@ Matrix* multiply_mat(Matrix* m1, Matrix* m2);
 // Transpose matrix (returns new matrix)
 Matrix* transpose_mat(Matrix* m);
 
-// Element-wise operations (modify m1 in-place)
+// Element-wise addition (modify m1 in-place)
 void add_matrix(Matrix* m1, Matrix* m2);
-void subtract_matrix(Matrix* m1, Matrix* m2);
+
+// Element-wise subtraction (returns new matrix, caller must free)
+Matrix* subtract_matrix(Matrix* m1, Matrix* m2);
 
 // Scalar operations (modify matrix in-place)
 void add_scaler(Matrix* m, float scaler);
@@ -91,49 +96,85 @@ Layer* layer_create_sigmoid();
 // Free layer and all its matrices
 void free_layer(Layer* layer);
 
-// Forward pass: compute layer output
+// Forward pass: compute layer output (returns new matrix, caller must free)
 Matrix* layer_forward(Layer* l, Matrix* input);
 
-// Backward pass: compute gradients and update weights
+// Backward pass: compute gradients and update weights (returns new matrix, caller must free)
 Matrix* layer_backward(Layer* l, Matrix* error_gradient, float learning_rate);
+```
+
+### Network
+
+High-level API for building and training multi-layer networks:
+
+```c
+// Create an empty network
+Network* create_network();
+
+// Add a layer to the network (network takes ownership)
+void add_layer(Network* n, Layer* l);
+
+// Free network and all its layers
+void free_network(Network* n);
+
+// Forward pass through all layers (returns new matrix, caller must free)
+Matrix* predict_network(Network* n, Matrix* input);
+
+// Train network: forward pass, compute loss gradient, backward pass
+void train_network(Network* n, Matrix* inputs, Matrix* targets, float learning_rate);
 ```
 
 ## Usage Example
 
 ```c
-#include "layer.h"
+#include "network.h"
+
+#define LEARNING_RATE 0.1f
+#define EPOCHS 1000
 
 int main() {
-    // Create a 1→1 dense layer (learns y = 2x)
-    Layer* dense = layer_create_dense(1, 1);
+    // Create network
+    Network* network = create_network();
+    Layer* dense1 = layer_create_dense(1, 1);
+    add_layer(network, dense1);
     
-    Matrix* input = create_matrix(1, 1);
-    Matrix* loss_grad = create_matrix(1, 1);
+    // Training data
+    Matrix* inputs = create_matrix(1, 1);
+    Matrix* targets = create_matrix(1, 1);
     
-    // Training loop
-    for (int epoch = 0; epoch < 1000; epoch++) {
-        for (int i = 0; i < 10; i++) {
-            input->data[0] = i / 20.0f;
-            float target = (i * 2.0f) / 20.0f;
-            
-            Matrix* pred = layer_forward(dense, input);
-            loss_grad->data[0] = pred->data[0] - target;
-            
-            Matrix* grad = layer_backward(dense, loss_grad, 0.1f);
-            free_matrix(grad);
+    // Training loop (learns y = 2x)
+    for (int i = 0; i < EPOCHS; i++) {
+        for (int j = 0; j < 10; j++) {
+            inputs->data[0] = j / 20.0f;
+            targets->data[0] = (j * 2.0f) / 20.0f;
+            train_network(network, inputs, targets, LEARNING_RATE);
         }
     }
     
     // Inference
-    input->data[0] = 5.0f / 20.0f;
-    Matrix* out = layer_forward(dense, input);
-    printf("Prediction: %f\n", out->data[0] * 20.0f);  // ~10.0
+    float test_input = 123.0f;
+    inputs->data[0] = test_input / 20.0f;
+    Matrix* output = predict_network(network, inputs);
+    float result = output->data[0] * 20.0f;
+    printf("Input: %.2f, Output: %.2f\n", test_input, result);  // ~246.0
     
-    free_matrix(input);
-    free_matrix(loss_grad);
-    free_layer(dense);
+    // Cleanup
+    free_matrix(output);
+    free_network(network);
+    free_matrix(inputs);
+    free_matrix(targets);
+    
     return 0;
 }
 ```
 
-### This documentation was analyzed and developed by LLMs. This has been verified by me (Yashu-Maurya).
+## Memory Ownership
+
+- **Matrix functions**: `create_matrix`, `copy_matrix`, `multiply_mat`, `transpose_mat`, and `subtract_matrix` return new matrices that the **caller must free**
+- **Layer functions**: `layer_forward` and `layer_backward` return new matrices that the **caller must free**
+- **Network**: When you call `add_layer`, the network takes ownership of the layer. Call `free_network` to free all layers.
+- **predict_network**: Returns a new matrix that the **caller must free**
+
+---
+
+*This documentation was analyzed and developed with LLM assistance. Verified by [Yashu-Maurya](https://github.com/Yashu-Maurya).*
