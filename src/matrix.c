@@ -102,7 +102,7 @@ void add_matrix(Matrix* m1, Matrix* m2) {
 Matrix* subtract_matrix(Matrix* m1, Matrix* m2) {
     if (m1->rows != m2->rows || m1->columns != m2->columns) {
         printf("Error: Incompatible dimensions for subtraction\n");
-        return;
+        return NULL;
     }
     Matrix* out = create_matrix(m1->rows, m1->columns);
     int n = m1->rows * m1->columns;
