@@ -2,3 +2,5 @@ build/
 build/*
 .cache/
 .cache/*
+
+/Users/yashumaurya/Documents/CNeuralNet/examples/mnist/MNIST_CSV/*
