@@ -4,5 +4,5 @@
 #include <math.h>
 
 float sigmoid(float x);
-
+float relu(float x);
 #endif

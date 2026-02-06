@@ -20,10 +20,11 @@ Matrix *multiply_mat(Matrix *m1, Matrix *m2);
 void add_scaler(Matrix *m, float scaler);
 void subtract_scaler(Matrix *m, float scaler);
 void add_matrix(Matrix *m1, Matrix *m2);
-Matrix* subtract_matrix(Matrix *m1, Matrix *m2);
+Matrix *subtract_matrix(Matrix *m1, Matrix *m2);
 void matrix_sigmoid(Matrix *m);
 void zero_matrix(Matrix *m);
 void scale_matrix(Matrix *m, float scaler);
 Matrix *copy_matrix(Matrix *m);
 Matrix *transpose_mat(Matrix *m);
+int argmax(Matrix *m);
 #endif

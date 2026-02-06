@@ -31,6 +31,8 @@ struct Layer{
 // Layer* layer_create(int input_n, int output_n);
 Layer* layer_create_dense(int input_n, int output_n);
 Layer* layer_create_sigmoid();
+Layer* layer_create_relu();
+
 void free_layer(Layer *layer);
 Matrix* layer_forward(Layer *l, Matrix *input);
 Matrix* layer_backward(Layer* l, Matrix* error_gradient, float learning_rate);
