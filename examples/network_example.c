@@ -1,4 +1,5 @@
 #include "../include/network.h"
+#include <stdio.h>
 
 #define LEARNING_RATE 0.1
 #define EPOCHS 1000
@@ -23,6 +24,12 @@ int main() {
       inputs->data[0] = j / 20.0f;
       float target_val = (j * 2.0f) / 20.0f;
       targets->data[0] = target_val;
+
+      Matrix *pred = predict_network(network, inputs);
+      float error = pred->data[0] - target_val;
+      epoch_error += error * error;
+      free_matrix(pred);
+
       train_network(network, inputs, targets, LEARNING_RATE);
     }
 
@@ -31,13 +38,15 @@ int main() {
     }
   }
   printf("\n--- Final Inference Test ---\n");
-  float test_input = 123.0f;
+  float test_input = 100.0f;
   inputs->data[0] = test_input / 20.0f;
   Matrix *output_matrix = predict_network(network, inputs);
   float output = output_matrix->data[0];
   float result = output * 20.0f;
 
-  printf("Input: %.2f, Output: %f", test_input, result);
+  printf("Input: %.2f, Output: %f\n", test_input, result);
+
+  free_matrix(output_matrix);
 
   free_network(network);
   free_matrix(inputs);
