@@ -20,6 +20,11 @@ set(
 add_executable(simple_net_example ${SOURCES})
 add_executable(layers_example examples/layers_example.c)
 add_executable(network_example examples/network_example.c)
-target_link_libraries(simple_net_example c_neural_net_lib)
-target_link_libraries(layers_example c_neural_net_lib)
-target_link_libraries(network_example c_neural_net_lib)
+add_executable(mnist_example examples/mnist/mnist_example.c)
+
+set(LIBS c_neural_net_lib)
+
+target_link_libraries(simple_net_example ${LIBS})
+target_link_libraries(layers_example ${LIBS})
+target_link_libraries(network_example ${LIBS})
+target_link_libraries(mnist_example ${LIBS})
