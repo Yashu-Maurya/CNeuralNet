@@ -1,1 +1,4 @@
+examples/mnist/MNIST_CSV/generate_mnist_csv.py filter=lfs diff=lfs merge=lfs -text
+examples/mnist/MNIST_CSV/mnist_test.csv filter=lfs diff=lfs merge=lfs -text
 examples/mnist/MNIST_CSV/mnist_train.csv filter=lfs diff=lfs merge=lfs -text
+examples/mnist/MNIST_CSV/readme.md filter=lfs diff=lfs merge=lfs -text

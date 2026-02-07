@@ -1,5 +1,3 @@
-The format is
-    label, pix-11, pix-12, pix-13, ...
-
-Refer to [MNIST in CSV](https://pjreddie.com/projects/mnist-in-csv/)
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:9f8690a7a1dedd1e3aee1b833a8aedde2259e57dac617e10978a46d5b53ecf1d
+size 124
