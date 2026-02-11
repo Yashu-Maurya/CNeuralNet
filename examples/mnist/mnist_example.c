@@ -89,7 +89,7 @@ int main() {
   printf("--- Training Phase ---\n");
 
   for (int epoch = 0; epoch < EPOCHS; epoch++) {
-    FILE *train_file = fopen("MNIST_CSV/mnist_train.csv", "r");
+    FILE *train_file = fopen("mnist_train.csv", "r");
     if (train_file == NULL) {
       fprintf(stderr, "Error: Could not open mnist_train.csv\n");
       fprintf(stderr,
@@ -140,7 +140,7 @@ int main() {
 
   printf("\n--- Testing Phase ---\n");
 
-  FILE *test_file = fopen("MNIST_CSV/mnist_test.csv", "r");
+  FILE *test_file = fopen("mnist_test.csv", "r");
   if (test_file == NULL) {
     fprintf(stderr, "Error: Could not open mnist_test.csv\n");
     free_matrix(input);
@@ -191,7 +191,7 @@ int main() {
 
   printf("\n--- Demo: Single Sample Predictions ---\n");
 
-  FILE *demo_file = fopen("MNIST_CSV/mnist_test.csv", "r");
+  FILE *demo_file = fopen("mnist_test.csv", "r");
   if (demo_file != NULL) {
     for (int i = 0; i < 5; i++) {
       int label = parse_csv_line(demo_file, input, target);
@@ -208,6 +208,8 @@ int main() {
     }
     fclose(demo_file);
   }
+
+  print_network_info(network);
 
   free_matrix(input);
   free_matrix(target);

@@ -46,6 +46,8 @@ int main() {
 
   printf("Input: %.2f, Output: %f\n", test_input, result);
 
+  print_network_info(network);
+
   free_matrix(output_matrix);
 
   free_network(network);
