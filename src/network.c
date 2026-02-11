@@ -104,3 +104,15 @@ void train_network(Network* n, Matrix* input, Matrix* target, float learning_rat
     free_matrix(loss_gradient);
     free_matrix(prediction);
 }
+
+void print_network_info(Network *n) {
+    if (n == NULL) {
+        printf("Network is NULL\n");
+        return;
+    }
+    printf("Network has %d layers:\n", n->layer_count);
+    for (int i = 0; i < n->layer_count; i++) {
+        printf(" Layer %d: %s\n", i + 1, n->layers[i]->name);
+        print_layer_info(n->layers[i]);
+    }
+}
