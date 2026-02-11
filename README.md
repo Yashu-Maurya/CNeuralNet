@@ -27,6 +27,7 @@ CNeuralNet/
     ├── simple_net.c     # Manual neural net implementation
     ├── layers_example.c # Using Layer abstraction
     └── network_example.c # Using Network API
+    └── mnist_example.c # Using Network API for MNIST Dataset
 ```
 
 ## Building
