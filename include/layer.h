@@ -36,4 +36,6 @@ Layer* layer_create_relu();
 void free_layer(Layer *layer);
 Matrix* layer_forward(Layer *l, Matrix *input);
 Matrix* layer_backward(Layer* l, Matrix* error_gradient, float learning_rate);
+
+void print_layer_info(Layer *l);
 #endif

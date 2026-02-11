@@ -284,3 +284,12 @@ Matrix *layer_backward(Layer *l, Matrix *error_gradient, float learning_rate) {
   }
   return l->backward(l, error_gradient, learning_rate);
 }
+
+void print_layer_info(Layer *l) {
+  if (l == NULL) {
+    printf("Layer: NULL\n");
+    return;
+  }
+  printf("Layer: %s, Input Size: %d, Output Size: %d\n", l->name, l->input_n,
+         l->output_n);
+}
