@@ -79,6 +79,9 @@ void scale_matrix(Matrix* m, float scaler);  // m[i] *= scaler
 
 // Apply sigmoid activation in-place
 void matrix_sigmoid(Matrix* m);
+
+// Find index of maximum value (useful for classification)
+int argmax(Matrix* m);
 ```
 
 ### Layer
@@ -93,6 +96,9 @@ Layer* layer_create_dense(int input_size, int output_size);
 // Create sigmoid activation layer
 Layer* layer_create_sigmoid();
 
+// Create ReLU activation layer
+Layer* layer_create_relu();
+
 // Free layer and all its matrices
 void free_layer(Layer* layer);
 
@@ -101,6 +107,9 @@ Matrix* layer_forward(Layer* l, Matrix* input);
 
 // Backward pass: compute gradients and update weights (returns new matrix, caller must free)
 Matrix* layer_backward(Layer* l, Matrix* error_gradient, float learning_rate);
+
+// Print layer configuration
+void print_layer_info(Layer *l);
 ```
 
 ### Network
@@ -122,9 +131,16 @@ Matrix* predict_network(Network* n, Matrix* input);
 
 // Train network: forward pass, compute loss gradient, backward pass
 void train_network(Network* n, Matrix* inputs, Matrix* targets, float learning_rate);
+
+// Print network architecture and layer details
+void print_network_info(Network* n);
 ```
 
-## Usage Example
+## Examples
+
+### Simple Regression
+
+Learns to multiply numbers by 2.
 
 ```c
 #include "network.h"
@@ -137,11 +153,11 @@ int main() {
     Network* network = create_network();
     Layer* dense1 = layer_create_dense(1, 1);
     add_layer(network, dense1);
-    
+
     // Training data
     Matrix* inputs = create_matrix(1, 1);
     Matrix* targets = create_matrix(1, 1);
-    
+
     // Training loop (learns y = 2x)
     for (int i = 0; i < EPOCHS; i++) {
         for (int j = 0; j < 10; j++) {
@@ -150,23 +166,39 @@ int main() {
             train_network(network, inputs, targets, LEARNING_RATE);
         }
     }
-    
+
     // Inference
     float test_input = 123.0f;
     inputs->data[0] = test_input / 20.0f;
     Matrix* output = predict_network(network, inputs);
     float result = output->data[0] * 20.0f;
     printf("Input: %.2f, Output: %.2f\n", test_input, result);  // ~246.0
-    
+
     // Cleanup
     free_matrix(output);
     free_network(network);
     free_matrix(inputs);
     free_matrix(targets);
-    
+
     return 0;
 }
 ```
+
+### MNIST Digit Classification
+
+A complete example of training a network on the MNIST dataset is available in `examples/mnist/`.
+
+**Structure:**
+
+- `mnist_example.c`: Loads CSV data, trains a 784 -> 128 -> 10 network.
+- Uses `layer_create_relu()` for hidden layers and `layer_create_sigmoid()` for output.
+- Demonstrates `argmax()` for interpreting classification results.
+
+To run the MNIST example:
+
+1. Download `mnist_train.csv` and `mnist_test.csv` (e.g. from Kaggle) into `build/`
+2. Build the project
+3. Run `./build/mnist_example`
 
 ## Memory Ownership
 
@@ -177,4 +209,4 @@ int main() {
 
 ---
 
-*This documentation was analyzed and developed with LLM assistance. Verified by [Yashu-Maurya](https://github.com/Yashu-Maurya).*
+_This documentation was analyzed and developed with LLM assistance. Verified by [Yashu-Maurya](https://github.com/Yashu-Maurya)._
