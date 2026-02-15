@@ -4,3 +4,6 @@ build/*
 .cache/*
 
 examples/mnist/MNIST_CSV/*
+
+examples/classification_example/Hotdog Not Hotdog Archive/*
+examples/classification_example/ZIP/*
