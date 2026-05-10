@@ -5,37 +5,40 @@
 
 typedef struct Layer Layer;
 
-typedef Matrix* (*ForwardFunction)(struct Layer *l, Matrix *input);
-typedef Matrix* (*BackwardFunction)(struct Layer* l, Matrix* error_gradient, float learning);
+typedef Matrix *(*ForwardFunction)(struct Layer *l, Matrix *input);
+typedef Matrix *(*BackwardFunction)(struct Layer *l, Matrix *error_gradient,
+                                    float learning);
 
+struct Layer {
 
-struct Layer{
+  ForwardFunction forward;
+  BackwardFunction backward;
 
-    ForwardFunction forward;
-    BackwardFunction backward;
+  Matrix *inputs;
+  Matrix *weights;
+  Matrix *bias;
+  Matrix *output;
 
-    Matrix *inputs;
-    Matrix *weights;
-    Matrix *bias;
-    Matrix *output;
+  Matrix *d_weight;
+  Matrix *d_bias;
 
-    Matrix *d_weight;
-    Matrix *d_bias;
+  int input_n;
+  int output_n;
 
-    int input_n;
-    int output_n;
-
-    char *name; // FOR REFERENCE ONLY
+  char *name; // FOR REFERENCE ONLY
 };
 
 // Layer* layer_create(int input_n, int output_n);
-Layer* layer_create_dense(int input_n, int output_n);
-Layer* layer_create_sigmoid();
-Layer* layer_create_relu();
+Layer *layer_create_dense(int input_n, int output_n);
+Layer *layer_create_sigmoid();
+Layer *layer_create_relu();
 
 void free_layer(Layer *layer);
-Matrix* layer_forward(Layer *l, Matrix *input);
-Matrix* layer_backward(Layer* l, Matrix* error_gradient, float learning_rate);
+Matrix *layer_forward(Layer *l, Matrix *input);
+Matrix *layer_backward(Layer *l, Matrix *error_gradient, float learning_rate);
 
 void print_layer_info(Layer *l);
+
+int save_layer(Layer *l, FILE *fp);
+Layer *load_layer(FILE *fp);
 #endif

@@ -1,10 +1,9 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include "math_functions.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "math_functions.h"
 
 typedef struct {
   int rows;
@@ -27,4 +26,6 @@ void scale_matrix(Matrix *m, float scaler);
 Matrix *copy_matrix(Matrix *m);
 Matrix *transpose_mat(Matrix *m);
 int argmax(Matrix *m);
+int save_matrix(Matrix *m, FILE *fp);
+void load_matrix(Matrix *m, FILE *fp);
 #endif

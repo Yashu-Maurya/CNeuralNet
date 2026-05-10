@@ -21,7 +21,7 @@ typedef struct {
 
 } Image;
 
-Image *read_image(char *path);
+Image *read_image(const char *path);
 void free_image(Image *img);
 void print_image_info(Image *img);
 Matrix *image_to_matrix(Image *img, int target_size);

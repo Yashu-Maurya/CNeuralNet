@@ -198,3 +198,23 @@ int argmax(Matrix *m) {
   }
   return max_idx;
 }
+
+int save_matrix(Matrix *m, FILE *fp) {
+  if (m == NULL) {
+    return -1;
+  }
+  fwrite(&m->rows, sizeof(int), 1, fp);
+  fwrite(&m->columns, sizeof(int), 1, fp);
+  fwrite(m->data, sizeof(float), m->rows * m->columns, fp);
+  return 0;
+}
+
+void load_matrix(Matrix *m, FILE *fp) {
+  if (fp == NULL || m == NULL) {
+    return;
+  }
+  int rows, cols;
+  fread(&rows, sizeof(int), 1, fp);
+  fread(&cols, sizeof(int), 1, fp);
+  fread(m->data, sizeof(float), m->rows * m->columns, fp);
+}

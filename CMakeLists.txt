@@ -23,6 +23,7 @@ add_executable(layers_example examples/layers_example.c)
 add_executable(network_example examples/network_example.c)
 add_executable(mnist_example examples/mnist/mnist_example.c)
 add_executable(classification_example examples/classification_example/classification_example.c)
+add_executable(save_and_load_weights_example examples/save_weights/save_and_load_weights.c)
 
 set(LIBS c_neural_net_lib)
 
@@ -31,3 +32,5 @@ target_link_libraries(layers_example ${LIBS})
 target_link_libraries(network_example ${LIBS})
 target_link_libraries(mnist_example ${LIBS})
 target_link_libraries(classification_example ${LIBS})
+target_link_libraries(save_and_load_weights_example ${LIBS})
+

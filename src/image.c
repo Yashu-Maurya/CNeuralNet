@@ -1,7 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/image.h"
 
-Image *read_image(char *path) {
+Image *read_image(const char *path) {
   Image *img = malloc(sizeof(Image));
   if (img == NULL) {
     fprintf(stderr, "Error allocating memory for Image struct\n");
@@ -11,10 +11,10 @@ Image *read_image(char *path) {
   img->name = NULL;
   img->type = NULL;
 
-  char *last_slash = strrchr(path, '/');
-  char *file_name = (last_slash != NULL) ? last_slash + 1 : path;
+  const char *last_slash = strrchr(path, '/');
+  const char *file_name = (last_slash != NULL) ? last_slash + 1 : path;
 
-  char *dot = strrchr(file_name, '.');
+  const char *dot = strrchr(file_name, '.');
   if (dot != NULL && dot != file_name) {
     img->type = strdup(dot + 1);
     size_t name_len = (size_t)(dot - file_name);

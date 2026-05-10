@@ -135,7 +135,36 @@ void train_network(Network* n, Matrix* inputs, Matrix* targets, float learning_r
 
 // Print network architecture and layer details
 void print_network_info(Network* n);
+
+// Save the entire network structure and learned weights to a binary file
+int save_network(Network* n, const char* filename);
+
+// Load network architecture and weights from a binary file into the network
+void load_network(Network* n, const char* filename);
 ```
+
+## Model Serialization
+
+CNeuralNet supports saving and loading models to/from disk using a custom, lightweight binary format. This allows you to train a model once and load its learned weights later for inference without having to rebuild the layers manually.
+
+**Internal File Architecture:**
+The binary file follows a strict sequential structure to perfectly restore the network topology and parameters:
+
+1. **Network Header:**
+   - `int layer_count` (The total number of layers in the network)
+2. **Layers** (Repeated `layer_count` times in order):
+   - `int type` (Layer type ID: `0` for Dense, `1` for Sigmoid, `2` for ReLU)
+   - _If Dense Layer (`type == 0`):_
+     - `int input_n` (Input neurons)
+     - `int output_n` (Output neurons)
+     - **Weights Matrix:**
+       - `int rows`, `int columns`
+       - `float data[]` (Raw contiguous float array of size `rows * columns`)
+     - **Bias Matrix:**
+       - `int rows`, `int columns`
+       - `float data[]` (Raw contiguous float array)
+   - _If Activation Layer (`type == 1` or `type == 2`):_
+     - No additional data is stored, as they act purely as mathematical transformations without learned parameters.
 
 ## Examples
 

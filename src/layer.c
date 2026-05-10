@@ -293,3 +293,56 @@ void print_layer_info(Layer *l) {
   printf("Layer: %s, Input Size: %d, Output Size: %d\n", l->name, l->input_n,
          l->output_n);
 }
+
+#define LAYER_DENSE 0
+#define LAYER_SIGMOID 1
+#define LAYER_RELU 2
+
+int save_layer(Layer *l, FILE *fp) {
+  if (fp == NULL || l == NULL) {
+    return -1;
+  }
+  
+  int type = -1;
+  if (l->forward == _layer_forward_dense) type = LAYER_DENSE;
+  else if (l->forward == _layer_forward_sigmoid) type = LAYER_SIGMOID;
+  else if (l->forward == _layer_forward_relu) type = LAYER_RELU;
+
+  fwrite(&type, sizeof(int), 1, fp);
+  
+  if (type == LAYER_DENSE) {
+    fwrite(&l->input_n, sizeof(int), 1, fp);
+    fwrite(&l->output_n, sizeof(int), 1, fp);
+    save_matrix(l->weights, fp);
+    save_matrix(l->bias, fp);
+  }
+  
+  return 0;
+}
+
+Layer *load_layer(FILE *fp) {
+  if (fp == NULL) {
+    return NULL;
+  }
+  
+  int type = -1;
+  if (fread(&type, sizeof(int), 1, fp) != 1) {
+    return NULL; // Failed to read type
+  }
+
+  if (type == LAYER_DENSE) {
+    int input_n, output_n;
+    fread(&input_n, sizeof(int), 1, fp);
+    fread(&output_n, sizeof(int), 1, fp);
+    Layer *l = layer_create_dense(input_n, output_n);
+    load_matrix(l->weights, fp);
+    load_matrix(l->bias, fp);
+    return l;
+  } else if (type == LAYER_SIGMOID) {
+    return layer_create_sigmoid();
+  } else if (type == LAYER_RELU) {
+    return layer_create_relu();
+  }
+  
+  return NULL;
+}
