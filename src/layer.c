@@ -35,44 +35,10 @@ Matrix *_layer_backward_dense(Layer *l, Matrix *error_gradient,
     return NULL;
   }
 
-  Matrix *input_t = transpose_mat(l->inputs);
-  if (input_t == NULL) {
-    fprintf(stderr, "Error: transpose_mat failed in backward_dense\n");
-    return NULL;
-  }
-
-  Matrix *d_weights = multiply_mat(error_gradient, input_t);
-  if (d_weights == NULL) {
-    fprintf(stderr,
-            "Error: d_weights multiply failed. error_grad: (%d,%d), input_t: "
-            "(%d,%d)\n",
-            error_gradient->rows, error_gradient->columns, input_t->rows,
-            input_t->columns);
-    free_matrix(input_t);
-    return NULL;
-  }
-
-  // W = w - lr*dW
-  scale_matrix(d_weights, -learning_rate);
-  add_matrix(l->weights, d_weights);
-
-  // Create a copy of error_gradient for bias update (don't mutate input)
-  Matrix *d_bias = copy_matrix(error_gradient);
-  if (d_bias == NULL) {
-    free_matrix(input_t);
-    free_matrix(d_weights);
-    return NULL;
-  }
-  scale_matrix(d_bias, -learning_rate);
-  add_matrix(l->bias, d_bias);
-
-  // B = b - lr*dB
-
+  // 1. Calculate input gradient first (using old weights)
   Matrix *weights_t = transpose_mat(l->weights);
   if (weights_t == NULL) {
-    free_matrix(input_t);
-    free_matrix(d_weights);
-    free_matrix(d_bias);
+    fprintf(stderr, "Error: transpose_mat of weights failed in backward_dense\n");
     return NULL;
   }
 
@@ -84,11 +50,40 @@ Matrix *_layer_backward_dense(Layer *l, Matrix *error_gradient,
             weights_t->rows, weights_t->columns, error_gradient->rows,
             error_gradient->columns);
   }
+  free_matrix(weights_t);
+
+  // 2. Update weights and bias
+  Matrix *input_t = transpose_mat(l->inputs);
+  if (input_t == NULL) {
+    fprintf(stderr, "Error: transpose_mat of inputs failed in backward_dense\n");
+    return input_gradient;
+  }
+
+  Matrix *d_weights = multiply_mat(error_gradient, input_t);
+  if (d_weights == NULL) {
+    fprintf(stderr,
+            "Error: d_weights multiply failed. error_grad: (%d,%d), input_t: "
+            "(%d,%d)\n",
+            error_gradient->rows, error_gradient->columns, input_t->rows,
+            input_t->columns);
+    free_matrix(input_t);
+    return input_gradient;
+  }
+
+  // W = w - lr*dW
+  scale_matrix(d_weights, -learning_rate);
+  add_matrix(l->weights, d_weights);
+
+  // Create a copy of error_gradient for bias update (don't mutate input)
+  Matrix *d_bias = copy_matrix(error_gradient);
+  if (d_bias != NULL) {
+    scale_matrix(d_bias, -learning_rate);
+    add_matrix(l->bias, d_bias);
+    free_matrix(d_bias);
+  }
 
   free_matrix(input_t);
   free_matrix(d_weights);
-  free_matrix(d_bias);
-  free_matrix(weights_t);
 
   return input_gradient;
 }
@@ -107,8 +102,20 @@ Layer *layer_create_dense(int input_n, int output_n) {
   // Weights: (output_n × input_n) for multiplication with input (input_n × 1)
   l->weights = create_matrix(output_n, input_n);
   l->bias = create_matrix(output_n, 1);
-  l->d_weight = create_matrix(output_n, input_n);
-  l->d_bias = create_matrix(output_n, 1);
+  l->d_weight = NULL;
+  l->d_bias = NULL;
+
+  if (l->weights == NULL || l->bias == NULL) {
+    fprintf(stderr, "Error: Failed to allocate weights or bias in layer_create_dense\n");
+    if (l->weights != NULL) {
+      free_matrix(l->weights);
+    }
+    if (l->bias != NULL) {
+      free_matrix(l->bias);
+    }
+    free(l);
+    return NULL;
+  }
 
   // Xavier initialization: scale by sqrt(2 / (fan_in + fan_out)), centered at 0
   float scale = sqrtf(2.0f / (float)(input_n + output_n));
@@ -119,9 +126,6 @@ Layer *layer_create_dense(int input_n, int output_n) {
         ((float)rand() / (float)RAND_MAX * 2.0f - 1.0f) * scale;
   }
   zero_matrix(l->bias);
-
-  zero_matrix(l->d_weight);
-  zero_matrix(l->d_bias);
 
   l->inputs = NULL;
   l->output = NULL;
