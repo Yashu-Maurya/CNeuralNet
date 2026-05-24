@@ -502,7 +502,7 @@
             ],
             "cStandard": "gnu99",
             "cppStandard": "gnu++11",
-            "compilerPath": "/Users/yashumaurya/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-gcc",
+            "compilerPath": "/Users/yashumaurya/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-g++",
             "compilerArgs": [
                 "-mlongcalls",
                 ""
