@@ -27,5 +27,5 @@ Matrix *copy_matrix(Matrix *m);
 Matrix *transpose_mat(Matrix *m);
 int argmax(Matrix *m);
 int save_matrix(Matrix *m, FILE *fp);
-void load_matrix(Matrix *m, FILE *fp);
+int load_matrix(Matrix *m, FILE *fp);
 #endif

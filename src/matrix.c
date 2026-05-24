@@ -51,6 +51,9 @@ void print_matrix(Matrix *m) {
 }
 
 Matrix *multiply_mat(Matrix *m1, Matrix *m2) {
+  if (m1 == NULL || m2 == NULL || m1->data == NULL || m2->data == NULL) {
+    return NULL;
+  }
   if (m1->columns != m2->rows) {
     printf("Error: Incompatible dimensions for multiplication\n");
     return NULL;
@@ -101,6 +104,9 @@ void subtract_scaler(Matrix *m, float scaler) {
 }
 
 void add_matrix(Matrix *m1, Matrix *m2) {
+  if (m1 == NULL || m2 == NULL || m1->data == NULL || m2->data == NULL) {
+    return;
+  }
   if (m1->rows != m2->rows || m1->columns != m2->columns) {
     printf("Error: Incompatible dimensions for addition\n");
     return;
@@ -113,6 +119,9 @@ void add_matrix(Matrix *m1, Matrix *m2) {
 }
 
 Matrix *subtract_matrix(Matrix *m1, Matrix *m2) {
+  if (m1 == NULL || m2 == NULL || m1->data == NULL || m2->data == NULL) {
+    return NULL;
+  }
   if (m1->rows != m2->rows || m1->columns != m2->columns) {
     printf("Error: Incompatible dimensions for subtraction\n");
     return NULL;
@@ -127,6 +136,9 @@ Matrix *subtract_matrix(Matrix *m1, Matrix *m2) {
 }
 
 void matrix_sigmoid(Matrix *m) {
+  if (m == NULL || m->data == NULL) {
+    return;
+  }
   int n = m->rows * m->columns;
   for (int i = 0; i < n; i++) {
     m->data[i] = sigmoid(m->data[i]);
@@ -134,6 +146,9 @@ void matrix_sigmoid(Matrix *m) {
 }
 
 void zero_matrix(Matrix *m) {
+  if (m == NULL || m->data == NULL) {
+    return;
+  }
   int n = m->rows * m->columns;
   for (int i = 0; i < n; i++) {
     m->data[i] = 0;
@@ -159,7 +174,7 @@ Matrix *transpose_mat(Matrix *m) {
 }
 
 void scale_matrix(Matrix *m, float scaler) {
-  if (m == NULL) {
+  if (m == NULL || m->data == NULL) {
     return;
   }
   int n = m->rows * m->columns;
@@ -187,6 +202,9 @@ Matrix *copy_matrix(Matrix *m) {
 }
 
 int argmax(Matrix *m) {
+  if (m == NULL || m->data == NULL) {
+    return -1;
+  }
   int max_idx = 0;
   float max_val = m->data[0];
 
@@ -209,12 +227,24 @@ int save_matrix(Matrix *m, FILE *fp) {
   return 0;
 }
 
-void load_matrix(Matrix *m, FILE *fp) {
-  if (fp == NULL || m == NULL) {
-    return;
+int load_matrix(Matrix *m, FILE *fp) {
+  if (fp == NULL || m == NULL || m->data == NULL) {
+    return -1;
   }
-  int rows, cols;
-  fread(&rows, sizeof(int), 1, fp);
-  fread(&cols, sizeof(int), 1, fp);
-  fread(m->data, sizeof(float), m->rows * m->columns, fp);
+  int rows = 0, cols = 0;
+  if (fread(&rows, sizeof(int), 1, fp) != 1 ||
+      fread(&cols, sizeof(int), 1, fp) != 1) {
+    fprintf(stderr, "Error: Failed to read matrix dimensions\n");
+    return -1;
+  }
+  if (rows != m->rows || cols != m->columns) {
+    fprintf(stderr, "Error: Matrix shape in file (%dx%d) does not match expected (%dx%d)\n",
+            rows, cols, m->rows, m->columns);
+    return -1;
+  }
+  if (fread(m->data, sizeof(float), m->rows * m->columns, fp) != (size_t)(m->rows * m->columns)) {
+    fprintf(stderr, "Error: Failed to read matrix data\n");
+    return -1;
+  }
+  return 0;
 }

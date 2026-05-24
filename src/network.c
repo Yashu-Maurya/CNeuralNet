@@ -73,11 +73,17 @@ Matrix *predict_network(Network *n, Matrix *input) {
   }
 
   Matrix *out = layer_forward(n->layers[0], input);
+  if (out == NULL) {
+    return NULL;
+  }
 
   for (int i = 1; i < n->layer_count; i++) {
     Matrix *next_out = layer_forward(n->layers[i], out);
     free_matrix(out); // Free the previous intermediate result
     out = next_out;
+    if (out == NULL) {
+      return NULL;
+    }
   }
 
   return out;
@@ -89,7 +95,14 @@ void train_network(Network *n, Matrix *input, Matrix *target,
     return;
 
   Matrix *prediction = predict_network(n, input);
+  if (prediction == NULL) {
+    return;
+  }
   Matrix *loss_gradient = subtract_matrix(prediction, target);
+  if (loss_gradient == NULL) {
+    free_matrix(prediction);
+    return;
+  }
   Matrix *current_gradient = loss_gradient;
 
   for (int i = n->layer_count - 1; i >= 0; i--) {
@@ -101,9 +114,14 @@ void train_network(Network *n, Matrix *input, Matrix *target,
     }
 
     current_gradient = next_gradient;
+    if (current_gradient == NULL) {
+      break;
+    }
   }
 
-  free_matrix(current_gradient);
+  if (current_gradient != NULL) {
+    free_matrix(current_gradient);
+  }
   free_matrix(loss_gradient);
   free_matrix(prediction);
 }

@@ -1,6 +1,9 @@
 #include "../include/layer.h"
 
 Matrix *_layer_forward_dense(Layer *l, Matrix *input) {
+  if (l == NULL || input == NULL || l->weights == NULL || l->bias == NULL) {
+    return NULL;
+  }
   // Free previous inputs to prevent memory leak
   if (l->inputs != NULL) {
     free_matrix(l->inputs);
@@ -138,6 +141,9 @@ Layer *layer_create_dense(int input_n, int output_n) {
 }
 
 Matrix *_layer_forward_sigmoid(Layer *l, Matrix *input) {
+  if (l == NULL || input == NULL) {
+    return NULL;
+  }
   // Free previous output to prevent memory leak
   if (l->output != NULL) {
     free_matrix(l->output);
@@ -158,7 +164,13 @@ Matrix *_layer_forward_sigmoid(Layer *l, Matrix *input) {
 
 Matrix *_layer_backward_sigmoid(Layer *l, Matrix *error_gradient,
                                 float learning) {
+  if (l == NULL || error_gradient == NULL || l->output == NULL) {
+    return NULL;
+  }
   Matrix *input_grad = copy_matrix(error_gradient);
+  if (input_grad == NULL) {
+    return NULL;
+  }
 
   // returns derivative
   for (int i = 0; i < input_grad->columns * input_grad->rows; i += 1) {
@@ -170,6 +182,9 @@ Matrix *_layer_backward_sigmoid(Layer *l, Matrix *error_gradient,
 }
 
 Matrix *_layer_forward_relu(Layer *l, Matrix *input) {
+  if (l == NULL || input == NULL) {
+    return NULL;
+  }
   // Free previous output to prevent memory leak
   if (l->output != NULL) {
     free_matrix(l->output);
@@ -189,7 +204,13 @@ Matrix *_layer_forward_relu(Layer *l, Matrix *input) {
 }
 
 Matrix *_layer_backward_relu(Layer *l, Matrix *error_gradient, float learning) {
+  if (l == NULL || error_gradient == NULL || l->output == NULL) {
+    return NULL;
+  }
   Matrix *input_grad = copy_matrix(error_gradient);
+  if (input_grad == NULL) {
+    return NULL;
+  }
 
   // returns derivative
   for (int i = 0; i < input_grad->columns * input_grad->rows; i += 1) {
@@ -335,12 +356,20 @@ Layer *load_layer(FILE *fp) {
   }
 
   if (type == LAYER_DENSE) {
-    int input_n, output_n;
-    fread(&input_n, sizeof(int), 1, fp);
-    fread(&output_n, sizeof(int), 1, fp);
+    int input_n = 0, output_n = 0;
+    if (fread(&input_n, sizeof(int), 1, fp) != 1 ||
+        fread(&output_n, sizeof(int), 1, fp) != 1) {
+      return NULL;
+    }
     Layer *l = layer_create_dense(input_n, output_n);
-    load_matrix(l->weights, fp);
-    load_matrix(l->bias, fp);
+    if (l == NULL) {
+      return NULL;
+    }
+    if (load_matrix(l->weights, fp) != 0 ||
+        load_matrix(l->bias, fp) != 0) {
+      free_layer(l);
+      return NULL;
+    }
     return l;
   } else if (type == LAYER_SIGMOID) {
     return layer_create_sigmoid();

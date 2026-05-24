@@ -1,0 +1,10 @@
+{
+  "name": "CNeuralNet",
+  "version": "1.0.0",
+  "description": "A lightweight neural network library in pure C",
+  "build": {
+    "flags": [
+      "-I include"
+    ]
+  }
+}
