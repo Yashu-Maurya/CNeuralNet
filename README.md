@@ -1,5 +1,6 @@
 # CNeuralNet
 
+
 A lightweight, dependency-free neural network library written in pure C. Designed for both desktop environments and resource-constrained embedded systems (like the ESP32), CNeuralNet provides matrix arithmetic operations, polymorphic layer abstractions, high-level network training APIs, image preprocessing utilities, and binary model serialization.
 
 ## Features
