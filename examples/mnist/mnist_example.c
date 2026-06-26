@@ -85,7 +85,7 @@ int main() {
     free_network(network);
     return -1;
   }
-
+  print_network_info(network);
   printf("--- Training Phase ---\n");
 
   for (int epoch = 0; epoch < EPOCHS; epoch++) {

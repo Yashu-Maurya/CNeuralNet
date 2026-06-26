@@ -28,4 +28,6 @@ Matrix *transpose_mat(Matrix *m);
 int argmax(Matrix *m);
 int save_matrix(Matrix *m, FILE *fp);
 int load_matrix(Matrix *m, FILE *fp);
+size_t get_matrix_size(Matrix *m);
+
 #endif

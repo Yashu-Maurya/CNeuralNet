@@ -248,3 +248,13 @@ int load_matrix(Matrix *m, FILE *fp) {
   }
   return 0;
 }
+
+size_t get_matrix_size(Matrix *m) {
+  if(m == NULL) {
+    // fprintf(stderr, "Error: Matrix is null. Cannot calculate size.\n");
+    return 0;
+  }
+  
+  return (size_t) (m->rows * m->columns * sizeof(float));
+
+}

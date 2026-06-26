@@ -317,6 +317,16 @@ void print_layer_info(Layer *l) {
   }
   printf("Layer: %s, Input Size: %d, Output Size: %d\n", l->name, l->input_n,
          l->output_n);
+  size_t layer_size = sizeof(Layer);
+  layer_size += get_matrix_size(l->inputs);
+  layer_size += get_matrix_size(l->weights); 
+  layer_size += get_matrix_size(l->bias); 
+  layer_size += get_matrix_size(l->output);
+
+  layer_size += get_matrix_size(l->d_weight); 
+  layer_size += get_matrix_size(l->d_bias); 
+
+  printf("Total space taken by layer: %lu bytes\n", layer_size);
 }
 
 #define LAYER_DENSE 0
