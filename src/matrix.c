@@ -1,4 +1,5 @@
 #include "../include/matrix.h"
+#include "cnn_platform.h"
 
 Matrix *create_matrix(int rows, int columns) {
   Matrix *m = malloc(sizeof(Matrix));
@@ -8,7 +9,7 @@ Matrix *create_matrix(int rows, int columns) {
   }
   m->rows = rows;
   m->columns = columns;
-  m->data = malloc(sizeof(float) * rows * columns);
+  m->data = cnn_alloc(sizeof(float) * rows * columns);
   if (m->data == NULL) {
     perror("Failed to allocate Matrix data");
     free(m);
@@ -22,7 +23,7 @@ void free_matrix(Matrix *m) {
   if (m == NULL) {
     return;
   }
-  free(m->data);
+  cnn_free(m->data);
   free(m);
 }
 

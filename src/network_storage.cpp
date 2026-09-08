@@ -59,6 +59,7 @@ static bool load_matrix_file(Matrix *matrix, File &file) {
 #define LAYER_DENSE 0
 #define LAYER_SIGMOID 1
 #define LAYER_RELU 2
+#define LAYER_CONV2D 3
 
 static int get_layer_type(Layer *layer) {
   if (layer == NULL || layer->name == NULL) {
@@ -67,6 +68,7 @@ static int get_layer_type(Layer *layer) {
   if (strcmp(layer->name, "Dense") == 0) return LAYER_DENSE;
   if (strcmp(layer->name, "Sigmoid") == 0) return LAYER_SIGMOID;
   if (strcmp(layer->name, "ReLU") == 0) return LAYER_RELU;
+  if (strcmp(layer->name, "Conv2d") == 0) return LAYER_CONV2D;
   return -1;
 }
 
@@ -85,6 +87,25 @@ static bool save_layer_file(Layer *layer, File &file) {
       return false;
     }
     if (!write_exact(file, &layer->output_n, sizeof(int))) {
+      return false;
+    }
+    if (!save_matrix_file(layer->weights, file)) {
+      return false;
+    }
+    if (!save_matrix_file(layer->bias, file)) {
+      return false;
+    }
+  } else if (type == LAYER_CONV2D) {
+    if (!write_exact(file, &layer->input_rows, sizeof(int))) {
+      return false;
+    }
+    if (!write_exact(file, &layer->input_columns, sizeof(int))) {
+      return false;
+    }
+    if (!write_exact(file, &layer->output_rows, sizeof(int))) {
+      return false;
+    }
+    if (!write_exact(file, &layer->output_columns, sizeof(int))) {
       return false;
     }
     if (!save_matrix_file(layer->weights, file)) {
@@ -132,6 +153,32 @@ static Layer *load_layer_file(File &file) {
 
   if (type == LAYER_RELU) {
     return layer_create_relu();
+  }
+
+  if (type == LAYER_CONV2D) {
+    int input_rows = 0;
+    int input_columns = 0;
+    int output_rows = 0;
+    int output_columns = 0;
+    if (!read_exact(file, &input_rows, sizeof(int)) ||
+        !read_exact(file, &input_columns, sizeof(int)) ||
+        !read_exact(file, &output_rows, sizeof(int)) ||
+        !read_exact(file, &output_columns, sizeof(int))) {
+      return NULL;
+    }
+
+    Layer *layer = layer_create_conv2d_shape(
+        input_rows, input_columns, input_rows - output_rows + 1,
+        input_columns - output_columns + 1);
+    if (layer == NULL) {
+      return NULL;
+    }
+    if (!load_matrix_file(layer->weights, file) ||
+        !load_matrix_file(layer->bias, file)) {
+      free_layer(layer);
+      return NULL;
+    }
+    return layer;
   }
 
   cnn_logf("Unknown layer type in model file: %d\n", type);
